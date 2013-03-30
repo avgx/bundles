@@ -16,8 +16,6 @@ buildscript {
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
-version = '1.0.1-SNAPSHOT'
-
 repositories {
     mavenCentral()
 }
@@ -26,4 +24,4 @@ dependencies {
     compile "com.squareup:javawriter:1.0.4"
 }
 
-defaultTasks 'fatjar'
+build.dependsOn fatJar
