@@ -201,6 +201,10 @@ public class FragmentArgumentsProcessor extends BaseProcessor {
             String cast = "Serializable".equals(op) ? "(" + type.getType() + ") " : "";
             if (!type.isRequired()) {
                 jw.beginControlFlow("if (args.containsKey("+JavaWriter.stringLiteral(type.getVariableName())+"))");
+            } else {
+                jw.beginControlFlow("if (!args.containsKey("+JavaWriter.stringLiteral(type.getVariableName())+"))");
+                jw.emitStatement("throw new IllegalStateException(\"required argument %1$s is not set\")", type.getVariableName());
+                jw.endControlFlow();
             }
 
             jw.emitStatement("fragment.%1$s = %4$sargs.get%2$s(\"%3$s\")", type.getName(), op, type.getKey(), cast);
