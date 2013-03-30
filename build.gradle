@@ -1,6 +1,7 @@
 apply plugin: "java"
 apply plugin: 'eclipse'
 apply plugin: "fatjar"
+apply from: 'http://tellurianring.com/projects/gradle-plugins/gradle-release/apply.groovy'
 
 buildscript {
     repositories {
@@ -15,7 +16,7 @@ buildscript {
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
-version = '1.0.1'
+version = '1.0.1-SNAPSHOT'
 
 repositories {
     mavenCentral()
