@@ -199,7 +199,15 @@ public class FragmentArgumentsProcessor extends BaseProcessor {
                 return;
             }
             String cast = "Serializable".equals(op) ? "(" + type.getType() + ") " : "";
-            jw.emitStatement("fragment.%1$s = %4$sargs.get%2$s(\"%3$s\")", type.name, op, type.key, cast);
+            if (!type.isRequired()) {
+                jw.beginControlFlow("if (args.containsKey("+JavaWriter.stringLiteral(type.getVariableName())+"))");
+            }
+
+            jw.emitStatement("fragment.%1$s = %4$sargs.get%2$s(\"%3$s\")", type.getName(), op, type.getKey(), cast);
+
+            if (!type.isRequired()) {
+                jw.endControlFlow();
+            }
         }
         jw.endMethod();
     }

@@ -5,16 +5,20 @@ import javax.lang.model.element.Element;
 import com.neenbedankt.bundles.annotation.Argument;
 
 class AnnotatedField {
-    final String name;
-    final String key;
+    private final String name;
+    private final String key;
     private final String type;
     private final Element element;
+    private final boolean required;
+
 
     public AnnotatedField(Element element) {
         this.name = element.getSimpleName().toString();
         this.key = getKey(element);
         this.type = element.asType().toString();
         this.element = element;
+        Argument argument = element.getAnnotation(Argument.class);
+        required = argument != null ? argument.required() : false;
     }
 
     public String getVariableName() {
@@ -51,6 +55,10 @@ class AnnotatedField {
 
     public Element getElement() {
         return element;
+    }
+
+    public boolean isRequired() {
+        return required;
     }
 
     @Override
