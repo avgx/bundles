@@ -93,11 +93,11 @@ public class FragmentArgumentsProcessor extends BaseProcessor {
             try {
                 String builder = entry.getKey().getSimpleName() + "Builder";
                 List<Element> originating = new ArrayList<Element>(10);
+                originating.add(entry.getKey());
                 TypeMirror superClass = entry.getKey().getSuperclass();
                 while (superClass.getKind() != TypeKind.NONE) {
                     TypeElement element = (TypeElement) typeUtils.asElement(superClass);
-                    if ("android.app.Fragment".equals(element.getQualifiedName())
-                            || "android.support.v4.app.Fragment".equals(element.getQualifiedName())) {
+                    if (element.getQualifiedName().toString().startsWith("android.")) {
                         break;
                     }
                     originating.add(element);
@@ -131,6 +131,10 @@ public class FragmentArgumentsProcessor extends BaseProcessor {
 
                 jw.endMethod();
 
+                if (!required.isEmpty()) {
+                    writeNewFragmentWithRequiredMethod(builder, entry.getKey(), jw, args);
+                }
+
                 Set<AnnotatedField> allArguments = collectArgumentsForType(typeUtils, entry.getKey(), fieldsByType,
                         false, true);
                 Set<AnnotatedField> optionalArguments = new HashSet<AnnotatedField>(allArguments);
@@ -153,6 +157,21 @@ public class FragmentArgumentsProcessor extends BaseProcessor {
         }
 
         return true;
+    }
+
+    private void writeNewFragmentWithRequiredMethod(String builder, TypeElement element, JavaWriter jw, String[] args)
+            throws IOException {
+        jw.beginMethod(element.getQualifiedName().toString(), "new" + element.getSimpleName(),
+                java.lang.reflect.Modifier.STATIC | java.lang.reflect.Modifier.PUBLIC, args);
+        StringBuilder argNames = new StringBuilder();
+        for (int i = 1; i < args.length; i += 2) {
+            argNames.append(args[i]);
+            if (i < args.length - 1) {
+                argNames.append(", ");
+            }
+        }
+        jw.emitStatement("return new %1$s(%2$s).build()", builder, argNames);
+        jw.endMethod();
     }
 
     private void writeBuildMethod(JavaWriter jw, TypeElement element) throws IOException {
