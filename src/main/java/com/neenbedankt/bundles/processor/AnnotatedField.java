@@ -4,7 +4,7 @@ import javax.lang.model.element.Element;
 
 import com.neenbedankt.bundles.annotation.Argument;
 
-class AnnotatedField {
+class AnnotatedField implements Comparable<AnnotatedField> {
     private final String name;
     private final String key;
     private final String type;
@@ -106,5 +106,10 @@ class AnnotatedField {
 
     public boolean isArray() {
         return type.endsWith("[]");
+    }
+
+    @Override
+    public int compareTo(AnnotatedField o) {
+        return getVariableName().compareTo(o.getVariableName());
     }
 }
