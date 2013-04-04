@@ -3,7 +3,6 @@ package com.neenbedankt.bundles.processor;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -11,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
@@ -32,7 +32,7 @@ public class FragmentArgumentsProcessor extends BaseProcessor {
 
     private Set<AnnotatedField> collectArgumentsForType(Types typeUtil, TypeElement type,
             Map<TypeElement, Set<Element>> fieldsByType, boolean requiredOnly, boolean processSuperClass) {
-        Set<AnnotatedField> arguments = new LinkedHashSet<AnnotatedField>(fieldsByType.size());
+        Set<AnnotatedField> arguments = new TreeSet<AnnotatedField>();
         if (processSuperClass) {
             TypeMirror superClass = type.getSuperclass();
             if (superClass.getKind() != TypeKind.NONE) {
@@ -118,23 +118,21 @@ public class FragmentArgumentsProcessor extends BaseProcessor {
                 Set<AnnotatedField> required = collectArgumentsForType(typeUtils, entry.getKey(), fieldsByType, true,
                         true);
 
-                List<AnnotatedField> requiredSorted = new ArrayList<AnnotatedField>(required);
-                Collections.sort(requiredSorted);
                 String[] args = new String[required.size() * 2];
                 int index = 0;
-                for (AnnotatedField arg : requiredSorted) {
+                for (AnnotatedField arg : required) {
                     args[index++] = arg.getType();
                     args[index++] = arg.getVariableName();
                 }
                 jw.beginMethod(null, builder, java.lang.reflect.Modifier.PUBLIC, args);
 
-                for (AnnotatedField arg : requiredSorted) {
+                for (AnnotatedField arg : required) {
                     writePutArguments(jw, arg.getVariableName(), "mArguments", arg);
                 }
 
                 jw.endMethod();
 
-                if (!requiredSorted.isEmpty()) {
+                if (!required.isEmpty()) {
                     writeNewFragmentWithRequiredMethod(builder, entry.getKey(), jw, args);
                 }
 
