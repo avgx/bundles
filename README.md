@@ -70,4 +70,4 @@ A class <YourActivityName>State is generated for this purpose. Here's an example
 # Using
 Either build from source using Gradle, or [download the jar][1]
 
-[1]: https://bitbucket.org/hvisser/bundles/download 
+[1]: https://bitbucket.org/hvisser/bundles/downloads
